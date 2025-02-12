@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_svg: ^2.0.9  # Последняя версия
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -56,6 +58,21 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/images/logo.svg
+    - assets/images/bonuslogo.png
+    - assets/images/arrow.png
+    - assets/images/menubutton.svg
+  fonts:
+    - family: GolosText
+      fonts:
+        - asset: assets/fonts/GolosText-Regular.ttf
+          style: normal
+        - asset: assets/fonts/GolosText-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/GolosText-ExtraBold.ttf
+          weight: 700
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:
