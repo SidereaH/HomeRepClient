@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
+import '../styles/styles.dart';
+
 class AnimatedMenuButton extends StatefulWidget {
   final VoidCallback? onTap;
 
@@ -50,7 +52,7 @@ class _AnimatedMenuButtonState extends State<AnimatedMenuButton>
         width: 29,
         height: 29,
         decoration: BoxDecoration(
-          color: Color(0xFF009EDC), // Background color
+          color: primaryColor, // Background color
           borderRadius: BorderRadius.circular(2), // Corner radius
         ),
         child: Center(

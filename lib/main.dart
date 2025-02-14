@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import './components/app_header.dart'; // Импортируем компонент
+import './components/app_header.dart';
+import 'components/category_item.dart'; // Импортируем компонент
 
 void main() {
   runApp(MyApp());
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppHeader(
             bonuses: 1000, address: "Гагарина 1"), // Используем компонент
-        body: Center(child: Text("Контент здесь")),
+        body: CategoryItem(imagePath: "assets/images/categories/household_appliances_category.png", categoryName: "Сантехника",),
       ),
     );
   }

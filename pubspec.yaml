@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_svg: ^2.0.9  # Последняя версия
+  fluttertoast: ^8.0.8
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -63,6 +64,10 @@ flutter:
     - assets/images/bonuslogo.png
     - assets/images/arrow.png
     - assets/images/menubutton.svg
+    - assets/images/categories/electricity_category.png
+    - assets/images/categories/gas_category.png
+    - assets/images/categories/household_appliances_category.png
+    - assets/images/categories/plumbing_category.png
   fonts:
     - family: GolosText
       fonts:
