@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import '../styles/styles.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'animated_icon_menu.dart';
+
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
-  final int bonuses = 1000;
-  final String address = "Гагарина 1";
+  final int bonuses;
+  final String address;
+  AppHeader({required this.bonuses, required this.address});
 
   @override
   Widget build(BuildContext context) {
-
     final double buttonWidthDifference = 20; // Разница в ширине
 
     return AppBar(
@@ -17,27 +19,10 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
       elevation: 1,
       title: Row(
         children: [
-          IconButton(
-            icon: SvgPicture.asset(
-              "assets/images/menubutton.svg",
-              width: 30,
-            ),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Меню открыто"),
-                  duration: Duration(seconds: 2),
-                ),
-              );
+          AnimatedMenuButton(
+            onTap: () {
+              print("Кнопка нажата!"); // Здесь можно добавить логику
             },
-            style: IconButton.styleFrom(
-              splashFactory: NoSplash.splashFactory, // Убираем эффект нажатия
-              highlightColor: Colors.transparent, // Убираем подсветку
-              hoverColor: Colors.transparent, // Убираем эффект наведения (для веба)
-              focusColor: Colors.transparent, // Убираем эффект фокуса
-              padding: EdgeInsets.zero, // Убираем внутренние отступы
-              visualDensity: VisualDensity.compact, // Уменьшаем размеры кнопки
-            ),
           ),
 
           SizedBox(width: buttonWidthDifference),
@@ -64,12 +49,14 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                       );
                     },
                     splashColor: Colors.transparent, // Убираем эффект нажатия
-                    highlightColor: Colors.transparent, // Убираем эффект подсветки
-                    hoverColor:
-                    Colors.transparent, // Убираем эффект наведения (для веба)
+                    highlightColor:
+                        Colors.transparent, // Убираем эффект подсветки
+                    hoverColor: Colors
+                        .transparent, // Убираем эффект наведения (для веба)
                     focusColor: Colors.transparent,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: buttonDecoration,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
