@@ -3,6 +3,7 @@ import '../styles/styles.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'animated_icon_menu.dart';
+
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final int bonuses;
   final String address;

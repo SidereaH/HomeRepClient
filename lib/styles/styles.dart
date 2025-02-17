@@ -6,12 +6,15 @@ const Color textColor = Color(0xff0C0C2D);
 const Color whiteColor = Colors.white;
 const Color bgcolor = Color(0xffF5F6F8);
 const Color secondaryBg = Color(0xffEDEDED);
+const Color screenColor = Color(0xffFCFDFE);
 // Текстовые стили
 const TextStyle titleStyle = TextStyle(
   fontSize: 26,
   fontWeight: FontWeight.bold,
   color: textColor,
 );
+const TextStyle headerComponentStyle =
+    TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: textColor);
 
 const TextStyle buttonTextStyle = TextStyle(
   fontSize: 16,

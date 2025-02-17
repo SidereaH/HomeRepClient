@@ -43,22 +43,23 @@ class CategoryItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
         ),
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 159),
+          constraints: BoxConstraints(maxWidth: 175),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             children: [
               Image.asset(
                 imagePath,
-                width: 69,
+                height: 69,
               ),
-              Flexible(
-                  child: Text(
-                categoryName,
-                style: categoryNameTextStyle,
-                softWrap: true, // Разрешить перенос текста
-                overflow: TextOverflow.visible,
-                textAlign: TextAlign.center,
-              )),
+              Expanded(
+                      child: Text(
+                        categoryName,
+                        style: categoryNameTextStyle,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                        textAlign: TextAlign.center,
+                      ),
+              ),
             ],
           ),
         ),
