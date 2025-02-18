@@ -1,6 +1,6 @@
 import 'package:domrep_flutter/styles/styles.dart';
 import 'package:flutter/cupertino.dart';
-
+import 'dart:collection';
 import 'category_item.dart';
 
 class QuickRequestItems extends StatelessWidget {
@@ -10,18 +10,22 @@ class QuickRequestItems extends StatelessWidget {
     "Электрика",
     "Газовое оборуд-е",
   ];
-
   @override
   Widget build(BuildContext context) {
+    final HashMap<String, String> categories = HashMap();
+    categories["Бытовая техника"] = "Бытовая_техника";
+    categories["Сантехника"] = "Сантехника";
+    categories["Электрика"] = "Электрика";
+    categories["Газовое оборуд-е"] = "Газовое_оборудование";
     return Container(
       decoration: BoxDecoration(
         color: bgcolor,
         boxShadow: [
           BoxShadow(
             color: Color(0x40000000),
-            blurRadius: 4,
+            blurRadius: 10,
             offset: Offset(0, 4),
-            spreadRadius: 0,
+            spreadRadius: -6,
           ),
         ],
       ),
@@ -36,25 +40,19 @@ class QuickRequestItems extends StatelessWidget {
         SizedBox(
           height: 15,
         ),
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: 159, // Укажите максимальную высоту, если нужно
-          ),
-          child: Center(
-            child: Wrap(
-              spacing: 30, // Горизонтальный отступ между элементами
-              runSpacing: 21, // Вертикальный отступ между строками
-              alignment: WrapAlignment.center, // Выравнивание по центру
-              crossAxisAlignment: WrapCrossAlignment
-                  .center, // Выравнивание по центру по вертикали
-              children: categories.map((category) {
-                return CategoryItem(
-                  imagePath:
-                      'assets/images/categories/household_appliances_category.png', // Путь к изображению
-                  categoryName: category,
-                );
-              }).toList(),
-            ),
+        Center(
+          child: Wrap(
+            spacing: 30, // Горизонтальный отступ между элементами
+            runSpacing: 21, // Вертикальный отступ между строками
+            alignment: WrapAlignment.center, // Выравнивание по центру
+            crossAxisAlignment: WrapCrossAlignment
+                .center, // Выравнивание по центру по вертикали
+            children: categories.entries.map((entry) {
+              return CategoryItem(
+                imageName: entry.value,
+                categoryName: entry.key,
+              );
+            }).toList(),
           ),
         ),
         SizedBox(

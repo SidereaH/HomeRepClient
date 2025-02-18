@@ -4,10 +4,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../styles/styles.dart';
 
 class CategoryItem extends StatelessWidget {
-  final String imagePath;
+  final String imageName;
   final String categoryName;
-  CategoryItem({super.key, 
-    required this.imagePath,
+
+  CategoryItem({
+    super.key,
+    required this.imageName,
     required this.categoryName,
   });
   @override
@@ -36,7 +38,7 @@ class CategoryItem extends StatelessWidget {
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
         );
-    },
+      },
       child: Container(
         decoration: BoxDecoration(
           color: secondaryBg, // Цвет фона
@@ -47,18 +49,18 @@ class CategoryItem extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Image.asset(
-                imagePath,
+              Image.network(
+                "http://10.185.225.1:8081/api/image/$imageName",
                 height: 69,
               ),
               Expanded(
-                      child: Text(
-                        categoryName,
-                        style: categoryNameTextStyle,
-                        softWrap: true,
-                        overflow: TextOverflow.visible,
-                        textAlign: TextAlign.center,
-                      ),
+                child: Text(
+                  categoryName,
+                  style: categoryNameTextStyle,
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ],
           ),

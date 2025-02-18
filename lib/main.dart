@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import './components/app_header.dart';
-import 'components/category_item.dart';
+
 import 'components/quick_request.dart'; // Импортируем компонент
+import 'components/question_button.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,9 +18,13 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
           appBar: AppHeader(
               bonuses: 1000, address: "Гагарина 1"), // Используем компонент
-          body: Container(
-            child: QuickRequests(),
-          )
+          body: Column(children: [
+            QuickRequests(),
+            QuestionButton(
+              colorAccent: Color(0xffFF8200),
+              question: "Что вам нужно?",
+            ),
+          ])
           //CategoryItem(imagePath: "assets/images/categories/household_appliances_category.png", categoryName: "Бытовая техника",),
           ),
     );

@@ -7,6 +7,9 @@ const Color whiteColor = Colors.white;
 const Color bgcolor = Color(0xffF5F6F8);
 const Color secondaryBg = Color(0xffEDEDED);
 const Color screenColor = Color(0xffFCFDFE);
+const Color accentColor = Color(0xffFF8200);
+const TextStyle questionAccentStyle =
+    TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor);
 // Текстовые стили
 const TextStyle titleStyle = TextStyle(
   fontSize: 26,
