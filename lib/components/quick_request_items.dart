@@ -4,12 +4,7 @@ import 'dart:collection';
 import 'category_item.dart';
 
 class QuickRequestItems extends StatelessWidget {
-  var categories = [
-    "Бытовая техника",
-    "Сантехника",
-    "Электрика",
-    "Газовое оборуд-е",
-  ];
+
   @override
   Widget build(BuildContext context) {
     final HashMap<String, String> categories = HashMap();
@@ -29,7 +24,7 @@ class QuickRequestItems extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
+      child: Column(mainAxisSize: MainAxisSize.max  , children: [
         SizedBox(
           height: 15,
         ),

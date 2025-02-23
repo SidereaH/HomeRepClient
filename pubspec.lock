@@ -70,6 +70,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_dotenv:
+    dependency: "direct main"
+    description:
+      name: flutter_dotenv
+      sha256: "7f6a540daa719816c88b11f790765816d78c57e23a9949d45af78038fd3d1109"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0-nullsafety.1"
   flutter_lints:
     dependency: "direct dev"
     description:

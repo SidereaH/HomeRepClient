@@ -48,6 +48,8 @@ class QuestionButton extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
+              Image.asset("assets/images/blue_arrow_button.png", width: 20,),
+              SizedBox(width: 24,)
             ],
           ),
         ),

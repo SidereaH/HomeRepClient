@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   flutter_svg: ^2.0.9 # Последняя версия
   fluttertoast: ^8.0.8
+  flutter_dotenv: ^4.0.0-nullsafety.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -67,6 +68,8 @@ flutter:
     - assets/images/categories/household_appliances_category.png
     - assets/images/categories/plumbing_category.png
     - assets/images/what_is_group.png
+    - assets/
+    - assets/images/blue_arrow_button.png
   fonts:
     - family: GolosText
       fonts:

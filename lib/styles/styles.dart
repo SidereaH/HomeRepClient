@@ -44,3 +44,8 @@ final BoxDecoration buttonDecoration = BoxDecoration(
   color: primaryColor,
   borderRadius: BorderRadius.circular(10),
 );
+final TextStyle buttonText = TextStyle(
+  fontSize: 14,
+  fontWeight: FontWeight.w500,
+  color: Colors.white,
+);

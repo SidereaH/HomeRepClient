@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../config/app_config.dart';
 import '../styles/styles.dart';
 
 class CategoryItem extends StatelessWidget {
@@ -50,7 +51,7 @@ class CategoryItem extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             children: [
               Image.network(
-                "http://10.185.225.1:8081/api/image/$imageName",
+                "${AppConfig.API_URI}/api/image/$imageName",
                 height: 69,
               ),
               Expanded(
