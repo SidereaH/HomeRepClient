@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-
 import '../styles/styles.dart';
 
 class AnimatedMenuButton extends StatefulWidget {

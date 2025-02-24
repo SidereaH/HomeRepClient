@@ -28,15 +28,42 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
         toolbarHeight: 80,
         backgroundColor: bgcolor,
         elevation: 1,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Image.asset("assets/images/menu_button.png", width: 29,),
+              onPressed: () { Scaffold.of(context).openDrawer(); },
+              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+            );
+          },),
+        // ),
+        // SizedBox(
+        //   width: 15,
+        //   height: 15,
+        //   child: InkWell(
+        //     onTap: () {
+        //       Scaffold.of(context).openDrawer();
+        //     },
+        //     splashColor: Colors.transparent,
+        //     highlightColor: Colors.transparent,
+        //     child: Container(
+        //       decoration: BoxDecoration(
+        //         shape: BoxShape.circle,
+        //       ),
+        //       child: Image.asset(
+        //         "assets/images/menu_button.png",
+        //         width: 15,
+        //         height: 15,
+        //         fit: BoxFit.cover,
+        //       ),
+        //     ),
+        //   ),
+        // ),
         title: Row(
           children: [
-            AnimatedMenuButton(
-              onTap: () {
-                print("Кнопка нажата!"); // Здесь можно добавить логику
-              },
-            ),
 
-            SizedBox(width: buttonWidthDifference),
+
+            // SizedBox(width: buttonWidthDifference),
 
             // Логотип и адрес (по центру)
             Expanded(
