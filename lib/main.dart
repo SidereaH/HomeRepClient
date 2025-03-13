@@ -28,17 +28,17 @@ class MyApp extends StatelessWidget {
       //     appBar: AppHeader(
       //         bonuses: 1000, address: "Гагарина 1"), // Используем компонент
       //     body: Column(children: [
-      //       QuickRequests(),
-      //       SizedBox(height: 15,),
-      //       QuestionButton(
-      //         colorAccent: Color(0xffFF8200),
-      //         question: "Что-то сломалось?",
-      //       ),
-      //       Text("Здесь вы можете заполнить заявку"),
-      //       SizedBox(height: 10,),
-      //       HistoryList()
-      //     ])
-          //CategoryItem(imagePath: "assets/images/categories/household_appliances_category.png", categoryName: "Бытовая техника",),
+      //       //       QuickRequests(),
+      //       //       SizedBox(height: 15,),
+      //       //       QuestionButton(
+      //       //         colorAccent: Color(0xffFF8200),
+      //       //         question: "Что-то сломалось?",
+      //       //       ),
+      //       //       Text("Здесь вы можете заполнить заявку"),
+      //       //       SizedBox(height: 10,),
+      //       //       HistoryList()
+      //       //     ])
+      //           //CategoryItem(imagePath: "assets/images/categories/household_appliances_category.png", categoryName: "Бытовая техника",),
         //  ),
     );//
   }
