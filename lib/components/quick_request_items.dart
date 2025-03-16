@@ -4,6 +4,8 @@ import 'dart:collection';
 import 'category_item.dart';
 
 class QuickRequestItems extends StatelessWidget {
+  const QuickRequestItems({super.key});
+
 
   @override
   Widget build(BuildContext context) {

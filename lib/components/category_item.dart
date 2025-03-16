@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
+import 'package:domrep_flutter/components/screens/order_form_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../config/app_config.dart';
 import '../styles/styles.dart';
 
@@ -8,7 +7,7 @@ class CategoryItem extends StatelessWidget {
   final String imageName;
   final String categoryName;
 
-  CategoryItem({
+  const CategoryItem({
     super.key,
     required this.imageName,
     required this.categoryName,
@@ -34,11 +33,15 @@ class CategoryItem extends StatelessWidget {
         //     );
         //   },
         // );
-        Fluttertoast.showToast(
-          msg: "опять стиралка?",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OrderFormScreen(orderCategory: imageName.replaceAll('_', ' '))),
         );
+        // Fluttertoast.showToast(
+        //   msg: "опять стиралка?",
+        //   toastLength: Toast.LENGTH_SHORT,
+        //   gravity: ToastGravity.BOTTOM,
+        // );
       },
       child: Container(
         decoration: BoxDecoration(

@@ -3,7 +3,7 @@ import 'package:domrep_flutter/components/history_list.dart';
 import 'package:flutter/material.dart';
 import './components/app_header.dart';
 
-import 'components/home_screen.dart';
+import 'components/screens/home_screen.dart';
 import 'components/quick_request.dart'; // Импортируем компонент
 import 'components/question_button.dart';
 import 'config/app_config.dart';

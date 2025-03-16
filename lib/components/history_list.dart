@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import '../styles/styles.dart';
 
 class HistoryList extends StatelessWidget{
+  const HistoryList({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Expanded(

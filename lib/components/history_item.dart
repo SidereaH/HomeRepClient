@@ -1,10 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../models/history_item.dart';
 import '../styles/styles.dart';
 
 class HistoryItem extends StatelessWidget {
+  const HistoryItem({super.key});
+
   @override
   Widget build(BuildContext context) {
     HistoryItemModel item = HistoryItemModel(

@@ -2,6 +2,8 @@ import 'package:domrep_flutter/components/quick_request_items.dart';
 import 'package:flutter/cupertino.dart';
 
 class QuickRequests extends StatelessWidget {
+  const QuickRequests({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(

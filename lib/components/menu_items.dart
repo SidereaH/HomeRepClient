@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'app_header.dart';
 
 class MenuItems extends StatelessWidget {
+  const MenuItems({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ListView(

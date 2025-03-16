@@ -8,6 +8,7 @@ const Color bgcolor = Color(0xffF5F6F8);
 const Color secondaryBg = Color(0xffEDEDED);
 const Color screenColor = Color(0xffFCFDFE);
 const Color accentColor = Color(0xffFF8200);
+const Color tipColor  = Color(0xff9F9F9F);
 const TextStyle questionAccentStyle =
     TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor);
 // Текстовые стили
@@ -30,7 +31,7 @@ const TextStyle counterTextStyle = TextStyle(
   color: textColor,
 );
 const TextStyle bonusTextStyle = TextStyle(
-  fontSize: 20,
+  fontSize: 18.5,
   fontWeight: FontWeight.w500,
   color: textColor,
 );
@@ -48,4 +49,9 @@ final TextStyle buttonText = TextStyle(
   fontSize: 14,
   fontWeight: FontWeight.w500,
   color: Colors.white,
+);
+final TextStyle tipText  = TextStyle(
+  color: tipColor,
+  fontSize: 12,
+  fontWeight: FontWeight.w300
 );
