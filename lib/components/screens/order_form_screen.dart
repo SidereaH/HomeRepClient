@@ -3,6 +3,7 @@ import 'package:domrep_flutter/components/tip_arrow.dart';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../../styles/styles.dart';
+import '../address_item.dart';
 import '../dropdown_category_selector.dart';
 
 class OrderFormScreen extends StatelessWidget {
@@ -74,7 +75,7 @@ class OrderFormScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: InfoItem(title: 'Адрес', value: 'ул Смычки 72'),
+                  child: AddressItem(title: 'Адрес', value: 'ул Смычки 72'),
                 ),
                 SizedBox(width: 8),
                 TipArrow(tip: "Изменить")
