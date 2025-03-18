@@ -1,5 +1,5 @@
+import 'package:domrep_flutter/components/geoloc/geoTile.dart';
 import 'package:flutter/material.dart';
-
 
 class MenuItems extends StatelessWidget {
   const MenuItems({super.key});
@@ -22,6 +22,7 @@ class MenuItems extends StatelessWidget {
           subtitle: Text('Мечникова 77А'),
           leading: Icon(Icons.location_on),
         ),
+        LocationScreen(),
         ListTile(
           title: Text('История заказов'),
           leading: Icon(Icons.history),
