@@ -17,11 +17,6 @@ class MenuItems extends StatelessWidget {
             child: Icon(Icons.person, size: 50, color: Colors.white),
           ),
         ),
-        ListTile(
-          title: Text('Моё местоположение'),
-          subtitle: Text('Мечникова 77А'),
-          leading: Icon(Icons.location_on),
-        ),
         LocationScreen(),
         ListTile(
           title: Text('История заказов'),
