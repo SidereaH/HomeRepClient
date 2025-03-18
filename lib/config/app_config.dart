@@ -18,11 +18,12 @@ class AppConfig {
 
   static String get API_URI => env['API_URI']!;
   static String get YANDEX_API_KEY => env['YANDEX_API_KEY']!;
-  static String get YANDEX_SUGGEST_KEY => env['YANDEX_GEOSUGGEST']!;
+  static String get YANDEX_SUGGEST_KEY => env['YANDEX_SUGGEST_KEY']!;
   Future<void> load() async {
     await DotEnv.load(fileName: 'assets/.env');
     debugPrint('ENVIRONMENT: $ENVIRONMENT');
     debugPrint('API ENDPOINT: $API_URI');
     debugPrint('YANDEX: $YANDEX_API_KEY');
+    debugPrint('Geo: $YANDEX_SUGGEST_KEY');
   }
 }

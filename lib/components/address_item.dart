@@ -1,7 +1,8 @@
+import 'package:domrep_flutter/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert'; // Для обработки JSON
 import 'package:http/http.dart' as http;
-import 'package:domrep_flutter/config/app_config.dart';
+
 class AddressItem extends StatefulWidget {
   final String title;
   final String value;
@@ -17,7 +18,7 @@ class _AddressItemState extends State<AddressItem> {
   List<String> _suggestions = [];
   final FocusNode _focusNode = FocusNode();
   OverlayEntry? _overlayEntry;
-
+  final String GeoSuggestAPI = AppConfig.YANDEX_SUGGEST_KEY;
   @override
   void initState() {
     super.initState();
@@ -52,18 +53,32 @@ class _AddressItemState extends State<AddressItem> {
   }
 
   Future<List<String>> fetchSuggestions(String query) async {
-
     final url =
-        'https://suggest-maps.yandex.ru/v1/suggest?apikey=$AppConfig.YANDEX_SUGGEST_KEY&text=$query&results=10&print_address=1';
-    final response = await http.get(Uri.parse(url));
+        'https://suggest-maps.yandex.ru/v1/suggest?apikey=$GeoSuggestAPI&text=Ростов-на-Дону$query&results=10&print_address=1&types=biz,street,house,entrance&bbox=47.183808,39.592541~47.300731,39.797455';
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final List results = data['results'];
-      return results
-          .map<String>((item) => item['address']['formatted_address'])
-          .toList();
-    } else {
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        final results = data['results'];
+        if (results is List) {
+          return results
+              .map<String>((item) => item['title']?['text'] ?? '')
+              .where((text) => text.isNotEmpty)
+              .toList();
+        } else {
+          // Если results нет или он не список
+          return [];
+        }
+      } else {
+        // Обработка плохого кода ответа
+        return [];
+      }
+    } catch (e) {
+      // Логирование или обработка исключения
+      print('Ошибка при получении подсказок: $e');
       return [];
     }
   }
@@ -76,7 +91,7 @@ class _AddressItemState extends State<AddressItem> {
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
         left: offset.dx,
-        top: offset.dy + renderBox.size.height+5,
+        top: offset.dy + renderBox.size.height + 30,
         width: renderBox.size.width,
         child: Material(
           elevation: 4.0,
