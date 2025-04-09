@@ -1,4 +1,6 @@
 import 'package:domrep_flutter/components/history_list.dart';
+import 'package:domrep_flutter/components/screens/sign_in_screen.dart';
+import 'package:domrep_flutter/components/screens/sign_up_screen.dart';
 
 import 'package:flutter/material.dart';
 import './components/app_header.dart';
@@ -13,6 +15,7 @@ Future main() async {
 
   await AppConfig().load();
   runApp(MyApp());
+
 }
 
 class MyApp extends StatelessWidget {
@@ -22,7 +25,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'GolosText',
       ),
-      home: HomeScreen(),
+      // home: HomeScreen(),
+      home: SignInScreen(),
       // home: Scaffold(
       //     appBar: AppHeader(
       //         bonuses: 1000, address: "Гагарина 1"), // Используем компонент

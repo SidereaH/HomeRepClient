@@ -20,10 +20,8 @@ class _LocationScreenState extends State<LocationScreen> {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Проверяем, включены ли службы геолокации
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Службы геолокации отключены, показываем сообщение пользователю
       setState(() {
         _locationMessage = "Службы геолокации отключены.";
       });
