@@ -25,8 +25,19 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'GolosText',
       ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SignInScreen(), // Главный экран входа
+        '/signin': (context) => const SignInScreen(), // Экран входа
+        '/signup': (context) => const SignUpScreen(), // Экран регистрации
+        '/home' : (context) => const HomeScreen(),
+      },
+      // Обработка неизвестных маршрутов (опционально)
+      onUnknownRoute: (settings) => MaterialPageRoute(
+        builder: (context) => const SignInScreen(),
+      ),
       // home: HomeScreen(),
-      home: SignUpScreen(),
+      // home: SignUpScreen(),
       // home: Scaffold(
       //     appBar: AppHeader(
       //         bonuses: 1000, address: "Гагарина 1"), // Используем компонент

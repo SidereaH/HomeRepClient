@@ -1,7 +1,11 @@
+import 'package:domrep_flutter/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:http/http.dart' as http;
 import 'package:domrep_flutter/styles/styles.dart';
+import 'dart:convert';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -25,6 +29,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscurePassword = true;
   bool _isLoading = false;
   bool _passwordHasFocus = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -44,17 +49,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_isFormValid) return;
+    if (!_isFormValid || _isLoading) return;
 
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isLoading = false);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
-    final fullPhone = '+7${_phoneMask.getUnmaskedText()}';
-    print('Имя: ${_usernameController.text}');
-    print('Email: ${_emailController.text}');
-    print('Телефон: $fullPhone');
-    print('Пароль: ${_passwordController.text}');
+    try {
+      final phone = '7${_phoneMask.getUnmaskedText()}';
+
+      final response = await http.post(
+        Uri.parse( AppConfig.MAIN_API_URI +'/auth/signup'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': _usernameController.text,
+          'email': _emailController.text,
+          'phone': phone,
+          'password': _passwordController.text,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        // Успешная регистрация
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/signin');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Регистрация прошла успешно!')),
+          );
+        }
+      } else {
+        // Ошибка от сервера
+        final error = jsonDecode(response.body);
+        setState(() => _errorMessage = error.toString());
+      }
+    } catch (e) {
+      setState(() => _errorMessage = 'Ошибка соединения: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -73,6 +108,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text('Регистрация', style: titleStyle),
                   const SizedBox(height: 32),
 
+                  if (_errorMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Text(
+                        _errorMessage!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+
                   // Имя пользователя
                   Text('Имя пользователя', style: tipText),
                   const SizedBox(height: 6),
@@ -83,7 +127,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       hintStyle: TextStyle(color: tipColor),
                       filled: true,
                       fillColor: whiteColor,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: secondaryBg),
@@ -109,7 +154,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       hintStyle: TextStyle(color: tipColor),
                       filled: true,
                       fillColor: whiteColor,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: secondaryBg),
@@ -140,7 +186,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       hintStyle: TextStyle(color: tipColor),
                       filled: true,
                       fillColor: whiteColor,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: secondaryBg),
@@ -174,7 +221,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintStyle: TextStyle(color: tipColor),
                           filled: true,
                           fillColor: whiteColor,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 14),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(color: secondaryBg),
@@ -183,7 +231,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(color: primaryColor, width: 2),
                           ),
-                          suffixIcon: _passwordHasFocus || _passwordController.text.isNotEmpty
+                          suffixIcon: _passwordHasFocus ||
+                              _passwordController.text.isNotEmpty
                               ? IconButton(
                             icon: Icon(
                               _obscurePassword
@@ -192,7 +241,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               color: tipColor,
                             ),
                             onPressed: () {
-                              setState(() => _obscurePassword = !_obscurePassword);
+                              setState(
+                                      () => _obscurePassword = !_obscurePassword);
                             },
                           )
                               : null,
@@ -221,13 +271,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: _isFormValid && !_isLoading ? _submit : null,
+                      onPressed: _submit,
                       child: _isLoading
                           ? const CircularProgressIndicator(
                         color: Colors.white,
                         strokeWidth: 2,
                       )
                           : Text('Зарегистрироваться', style: buttonText),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Ссылка на регистрацию
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/signin');
+                    },
+                    child: Text(
+                      'Есть аккаунт? Войти',
+                      style: TextStyle(
+                        color: primaryColor,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
                 ],

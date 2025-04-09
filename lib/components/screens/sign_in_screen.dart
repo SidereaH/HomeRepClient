@@ -1,7 +1,10 @@
-import 'package:domrep_flutter/styles/styles.dart';
+import 'package:domrep_flutter/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:domrep_flutter/styles/styles.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -23,12 +26,7 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _obscurePassword = true;
   bool _isLoading = false;
   bool _passwordHasFocus = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Убрал слушатели, они нам не нужны
-  }
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -43,15 +41,51 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_isFormValid) return;
+    if (!_isFormValid || _isLoading) return;
 
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isLoading = false);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
-    final fullPhone = '+7${_phoneMask.getUnmaskedText()}';
-    print('Номер: $fullPhone');
-    print('Пароль: ${_passwordController.text}');
+    try {
+      final phone = '7${_phoneMask.getUnmaskedText()}';
+      // print(phone);
+      final response = await http.post(
+        Uri.parse(AppConfig.MAIN_API_URI + '/auth/signin'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'phone': phone,
+          'password': _passwordController.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Успешный вход
+        final authResponse = jsonDecode(response.body);
+        final accessToken = authResponse['accessToken'];
+        final refreshToken = authResponse['refreshToken'];
+
+        // Сохраняем токены (например, в SharedPreferences)
+        // await storage.write(key: 'accessToken', value: accessToken);
+        // await storage.write(key: 'refreshToken', value: refreshToken);
+
+        // Переходим на главный экран
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      } else {
+        // Ошибка аутентификации
+        final error = jsonDecode(response.body);
+        setState(() => _errorMessage = error.toString());
+      }
+    } catch (e) {
+      setState(() => _errorMessage = 'Ошибка соединения: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -81,7 +115,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
                 const SizedBox(height: 20),
 
-                // Поле пароля (исправленное)
+                // Поле пароля
                 FocusScope(
                   child: Focus(
                     onFocusChange: (hasFocus) {
@@ -111,6 +145,15 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                 ),
 
+                if (_errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+
                 const SizedBox(height: 30),
 
                 // Кнопка входа
@@ -132,7 +175,22 @@ class _SignInScreenState extends State<SignInScreen> {
                         : const Text(
                       'Войти',
                       style: questionAccentStyle,
+                    ),
+                  ),
+                ),
 
+                const SizedBox(height: 20),
+
+                // Ссылка на регистрацию
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/signup');
+                  },
+                  child: Text(
+                    'Нет аккаунта? Зарегистрироваться',
+                    style: TextStyle(
+                      color: primaryColor,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),

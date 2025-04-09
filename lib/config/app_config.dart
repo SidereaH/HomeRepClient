@@ -19,6 +19,7 @@ class AppConfig {
   static String get YANDEX_API_KEY => dotenv.env['YANDEX_API_KEY']!;
   static String get YANDEX_SUGGEST_KEY => dotenv.env['YANDEX_SUGGEST_KEY']!;
   static String get YANDEX_GEOCODER => dotenv.env['YANDEX_GEOCODER']!;
+  static String get MAIN_API_URI => dotenv.env['AUTH_API_URI']!;
 
   Future<void> load() async {
     await dotenv.load(fileName: 'assets/.env');
