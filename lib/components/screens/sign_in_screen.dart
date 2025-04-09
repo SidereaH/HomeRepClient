@@ -5,9 +5,11 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:domrep_flutter/styles/styles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
+
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -17,6 +19,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+
 
   final _phoneMask = MaskTextInputFormatter(
     mask: '+7 (###) ###-##-##',
@@ -66,9 +69,10 @@ class _SignInScreenState extends State<SignInScreen> {
         final accessToken = authResponse['accessToken'];
         final refreshToken = authResponse['refreshToken'];
 
+        final SharedPreferences storage = await SharedPreferences.getInstance();
         // Сохраняем токены (например, в SharedPreferences)
-        // await storage.write(key: 'accessToken', value: accessToken);
-        // await storage.write(key: 'refreshToken', value: refreshToken);
+        await storage.setString('accessToken', accessToken);
+        await storage.setString('refreshToken', refreshToken);
 
         // Переходим на главный экран
         if (mounted) {
