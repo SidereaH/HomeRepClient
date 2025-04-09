@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'GolosText',
       ),
       // home: HomeScreen(),
-      home: SignInScreen(),
+      home: SignUpScreen(),
       // home: Scaffold(
       //     appBar: AppHeader(
       //         bonuses: 1000, address: "Гагарина 1"), // Используем компонент
