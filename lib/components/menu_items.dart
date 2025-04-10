@@ -1,5 +1,6 @@
 import 'package:domrep_flutter/components/geoloc/geoTile.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuItems extends StatelessWidget {
   const MenuItems({super.key});
@@ -67,6 +68,16 @@ class MenuItems extends StatelessWidget {
           title: Text('Информация'),
           leading: Icon(Icons.info),
           onTap: () {},
+        ),
+        ListTile(
+          title: Text('Выйти'),
+          leading: Icon(Icons.logout),
+          onTap: () async {
+            final SharedPreferences storage = await SharedPreferences.getInstance();
+            // Сохраняем токены (например, в SharedPreferences)
+            storage.clear();
+            Navigator.pushReplacementNamed(context, '/signin');
+          },
         ),
       ],
     );
