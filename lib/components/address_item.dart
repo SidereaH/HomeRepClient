@@ -7,12 +7,14 @@ class AddressItem extends StatefulWidget {
   final String title;
   final String value;
   final String selectedCity;
+  final ValueChanged<String>? onChanged;
 
   const AddressItem({
     super.key,
     required this.title,
     required this.value,
     required this.selectedCity,
+    this.onChanged,
   });
 
   @override
@@ -25,6 +27,7 @@ class _AddressItemState extends State<AddressItem> {
   final FocusNode _focusNode = FocusNode();
   OverlayEntry? _overlayEntry;
   final String geoSuggestAPI = AppConfig.YANDEX_SUGGEST_KEY;
+  final LayerLink _layerLink = LayerLink();
 
   @override
   void initState() {
@@ -39,20 +42,33 @@ class _AddressItemState extends State<AddressItem> {
   }
 
   @override
+  void didUpdateWidget(AddressItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != oldWidget.value && widget.value != _controller.text) {
+      _controller.text = widget.value;
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     _removeOverlay();
     super.dispose();
   }
 
   void _onTextChanged() async {
     final text = _controller.text;
+    widget.onChanged?.call(text);
+
     if (text.isNotEmpty) {
       final suggestions = await fetchSuggestions(text);
-      setState(() {
-        _suggestions = suggestions;
-      });
-      _showOverlay();
+      if (mounted) {
+        setState(() {
+          _suggestions = suggestions;
+        });
+        _showOverlay();
+      }
     } else {
       _removeOverlay();
     }
@@ -61,56 +77,56 @@ class _AddressItemState extends State<AddressItem> {
   Future<List<String>> fetchSuggestions(String query) async {
     final city = Uri.encodeComponent(widget.selectedCity);
     final url =
-        'https://suggest-maps.yandex.ru/v1/suggest?apikey=$geoSuggestAPI&text=$city$query&results=10&print_address=1&types=biz,street,house,entrance&bbox=47.1,39.5~47.5,40';
+        'https://suggest-maps.yandex.ru/v1/suggest?apikey=$geoSuggestAPI&text=$city $query&results=5&print_address=1&types=street,house,entrance';
 
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final results = data['results'];
-        if (results is List) {
-          return results
-              .map<String>((item) => item['title']?['text'] ?? '')
-              .where((text) => text.isNotEmpty)
-              .toList();
-        } else {
-          return [];
-        }
-      } else {
-        return [];
+        final results = data['results'] as List?;
+        return results
+            ?.map<String>((item) => item['title']?['text']?.toString() ?? '')
+            .where((text) => text.isNotEmpty)
+            .toList() ??
+            [];
       }
+      return [];
     } catch (e) {
-      print('Ошибка при получении подсказок: $e');
+      debugPrint('Ошибка при получении подсказок: $e');
       return [];
     }
   }
 
   void _showOverlay() {
     _removeOverlay();
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final Offset offset = renderBox.localToGlobal(Offset.zero);
+
+    if (_suggestions.isEmpty) return;
 
     _overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        left: offset.dx,
-        top: offset.dy + renderBox.size.height + 8,
-        width: renderBox.size.width,
+      builder: (context) => CompositedTransformFollower(
+        link: _layerLink,
+        showWhenUnlinked: false,
+        offset: const Offset(0, 40),
         child: Material(
-          elevation: 4.0,
-          child: ListView.builder(
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            itemCount: _suggestions.length,
-            itemBuilder: (context, index) {
-              final suggestion = _suggestions[index];
-              return ListTile(
-                title: Text(suggestion),
-                onTap: () {
-                  _controller.text = suggestion;
-                  _removeOverlay();
-                },
-              );
-            },
+          elevation: 4,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 200),
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              itemCount: _suggestions.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(_suggestions[index]),
+                  onTap: () {
+                    _controller.text = _suggestions[index];
+                    widget.onChanged?.call(_suggestions[index]);
+                    _removeOverlay();
+                    _focusNode.unfocus();
+                  },
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -126,18 +142,33 @@ class _AddressItemState extends State<AddressItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(widget.title, style: TextStyle(fontSize: 14, color: Colors.grey)),
-        SizedBox(height: 4),
-        TextField(
-          focusNode: _focusNode,
-          controller: _controller,
-          style: TextStyle(fontSize: 16),
-          decoration: InputDecoration.collapsed(hintText: 'Введите адрес'),
-        ),
-      ],
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(widget.title, style: TextStyle(fontSize: 14, color: Colors.grey)),
+          const SizedBox(height: 4),
+          TextField(
+            focusNode: _focusNode,
+            controller: _controller,
+            style: const TextStyle(fontSize: 16),
+            decoration: InputDecoration(
+              hintText: 'Введите адрес',
+              border: const OutlineInputBorder(),
+              suffixIcon: _suggestions.isNotEmpty
+                  ? IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  _controller.clear();
+                  widget.onChanged?.call('');
+                },
+              )
+                  : null,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

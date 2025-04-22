@@ -2,15 +2,16 @@ import 'package:domrep_flutter/components/screens/home_screen.dart';
 import 'package:domrep_flutter/components/tip_arrow.dart';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import '../../styles/styles.dart';
 import '../address_item.dart';
 import '../dropdown_category_selector.dart';
 
 class OrderFormScreen extends StatefulWidget {
   final String orderCategory;
-
   const OrderFormScreen({super.key, required this.orderCategory});
-
   @override
   _OrderFormScreenState createState() => _OrderFormScreenState();
 }
@@ -24,6 +25,69 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   ];
   String addressValue = 'ул Смычки 72';
   String apartmentValue = '';
+  String descriptionValue = '';
+  String priceValue = '';
+  String phoneValue = '+7 971 231-12-32';
+  String selectedCategory = '';
+
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    selectedCategory = widget.orderCategory;
+  }
+
+  Future<void> _submitOrder() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      // Подготовка данных для отправки
+      final orderData = {
+        "description": descriptionValue,
+        "category": {"name": selectedCategory},
+        "address": {
+          "streetName": addressValue.split(',')[0], // предполагаем, что улица - первое слово
+          "buildingNumber": addressValue.split(' ')[1], // а номер дома - второе
+          "apartmentNumber": apartmentValue,
+          "cityName": selectedCity,
+          "longitude": 0.0, // нужно добавить реальные координаты
+          "latitude": 0.0,  // нужно добавить реальные координаты
+        },
+        "paymentType": {"name": "MIR"}, // или другой тип оплаты
+        "accepted": false
+      };
+
+      try {
+        final response = await http.post(
+          Uri.parse('http://localhost:8084/orders'), // замените на ваш URL
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(orderData),
+        );
+
+        if (response.statusCode == 200) {
+          // Успешная отправка
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Заказ успешно создан!')),
+          );
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        } else {
+          // Ошибка сервера
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Ошибка при создании заказа: ${response.body}')),
+          );
+        }
+      } catch (e) {
+        // Ошибка сети
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка сети: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,88 +118,136 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
         ],
       ),
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Проверьте и дополните информацию', style: bonusTextStyle),
-            SizedBox(height: 20),
-            DropdownCategorySelector(
-              title: "Категория",
-              categories: [
-                'Сантехника',
-                'Бытовая техника',
-                'Газовое оборудование',
-                'Электрика'
-              ],
-              initialCategory: widget.orderCategory,
-              onCategoryChanged: (selected) {},
-            ),
-            SizedBox(height: 16),
-
-            /// ---------- Город ----------
-            Text('Город', style: tipText),
-            SizedBox(height: 4),
-            DropdownButton<String>(
-              value: selectedCity,
-              isExpanded: true,
-              items: cities.map((city) {
-                return DropdownMenuItem<String>(
-                  value: city,
-                  child: Text(city),
-                );
-              }).toList(),
-              onChanged: (city) {
-                setState(() {
-                  selectedCity = city!;
-                });
-              },
-            ),
-
-            SizedBox(height: 16),
-
-            /// ---------- Адрес ----------
-            AddressItem(
-              title: 'Адрес',
-              value: addressValue,
-              selectedCity: selectedCity,
-            ),
-
-            SizedBox(height: 16),
-
-            /// ---------- Квартира ----------
-            InfoItem(
-              title: 'Квартира',
-              value: apartmentValue,
-              isPrice: false,
-              hint: "Номер квартиры",
-            ),
-
-            SizedBox(height: 16),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: InfoItem(
-                    title: 'Предложите стоимость работы',
-                    value: '12 990 р.',
-                    isPrice: true,
-                    hint: "Сколько вы готовы предложить",
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 80), // Добавляем отступ снизу для кнопки
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Проверьте и дополните информацию', style: bonusTextStyle),
+                  SizedBox(height: 20),
+                  DropdownCategorySelector(
+                    title: "Категория",
+                    categories: [
+                      'Сантехника',
+                      'Бытовая техника',
+                      'Газовое оборудование',
+                      'Электрика'
+                    ],
+                    initialCategory: widget.orderCategory,
+                    onCategoryChanged: (selected) {
+                      setState(() {
+                        selectedCategory = selected;
+                      });
+                    },
                   ),
-                ),
-                SizedBox(width: 8),
-                // TipArrow(tip: "Как определяется\n стоимость?"),
-              ],
+                  SizedBox(height: 16),
+
+                  /// ---------- Описание заказа ----------
+                  InfoItem(
+                    title: 'Описание заказа',
+                    value: descriptionValue,
+                    isPrice: false,
+                    hint: "Что сломалось...",
+                    onChanged: (value) {
+                      setState(() {
+                        descriptionValue = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16),
+
+                  /// ---------- Город ----------
+                  Text('Город', style: tipText),
+                  SizedBox(height: 4),
+                  DropdownButton<String>(
+                    value: selectedCity,
+                    isExpanded: true,
+                    items: cities.map((city) {
+                      return DropdownMenuItem<String>(
+                        value: city,
+                        child: Text(city),
+                      );
+                    }).toList(),
+                    onChanged: (city) {
+                      setState(() {
+                        selectedCity = city!;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16),
+
+                  /// ---------- Адрес ----------
+                  AddressItem(
+                    title: 'Адрес',
+                    value: addressValue,
+                    selectedCity: selectedCity,
+                    onChanged: (value) {
+                      setState(() {
+                        addressValue = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16),
+
+                  /// ---------- Квартира ----------
+                  InfoItem(
+                    title: 'Квартира',
+                    value: apartmentValue,
+                    isPrice: false,
+                    hint: "Номер квартиры",
+                    onChanged: (value) {
+                      setState(() {
+                        apartmentValue = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: InfoItem(
+                          title: 'Предложите стоимость работы',
+                          value: priceValue,
+                          isPrice: true,
+                          hint: "Сколько вы готовы предложить",
+                          onChanged: (value) {
+                            setState(() {
+                              priceValue = value;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      TipArrow(tip: "Как определяется\n стоимость?"),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  PhoneInfoItem(
+                    title: 'Номер для связи',
+                    phoneNumber: phoneValue,
+                    onPhoneChanged: (value) {
+                      setState(() {
+                        phoneValue = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 80), // Добавляем дополнительный отступ вниз формы
+                ],
+              ),
             ),
-            SizedBox(height: 16),
-            PhoneInfoItem(
-              title: 'Номер для связи',
-              phoneNumber: '+7 971 231-12-32',
-              onPhoneChanged: (value) {},
-            ),
-            Spacer(),
-            SizedBox(
+          ),
+
+          // Закрепленная кнопка внизу
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 20,
+            child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -144,14 +256,13 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                onPressed: () {},
+                onPressed: _submitOrder,
                 child: Text('Найти мастера',
                     style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
             ),
-            SizedBox(height: 20),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -162,13 +273,15 @@ class InfoItem extends StatefulWidget {
   final String value;
   final String hint;
   final bool isPrice;
-  const InfoItem(
-      {super.key,
-      required this.title,
-      required this.value,
-      required this.hint,
-      required this.isPrice});
-
+  final Function(String) onChanged;
+  const InfoItem({
+    super.key,
+    required this.title,
+    required this.value,
+    required this.hint,
+    required this.isPrice,
+    required this.onChanged,
+  });
   @override
   _InfoItemState createState() => _InfoItemState();
 }
@@ -176,7 +289,6 @@ class InfoItem extends StatefulWidget {
 class _InfoItemState extends State<InfoItem> {
   late TextEditingController _controller;
   String? _errorText;
-
   @override
   void initState() {
     super.initState();
@@ -190,19 +302,20 @@ class _InfoItemState extends State<InfoItem> {
   }
 
   bool _validatePrice(String value) {
-    // Регулярное выражение для проверки формата цены (например, 12 990 р.)
-    final RegExp priceRegExp = RegExp(r'^\d{1,3}(?:\d{3})');
+    // Регулярное выражение для проверки формата цены (например, 12990)
+    final RegExp priceRegExp = RegExp(r'^\d+$');
     return priceRegExp.hasMatch(value);
   }
 
   void _onChanged(String value) {
+    widget.onChanged(value);
+
     if (widget.isPrice == true) {
       setState(() {
         if (_validatePrice(value)) {
           _errorText = null;
         } else {
-          _errorText =
-              'Введите корректную цену (например, 12990) в рос. рублях';
+          _errorText = 'Введите корректную цену (например, 12990)';
         }
       });
     }
@@ -222,7 +335,7 @@ class _InfoItemState extends State<InfoItem> {
             style: TextStyle(fontSize: 16),
             decoration: InputDecoration(
               errorText: _errorText,
-              // border: OutlineInputBorder(),
+              border: OutlineInputBorder(),
               hintText: widget.hint,
             ),
             onChanged: _onChanged,
@@ -237,14 +350,12 @@ class PhoneInfoItem extends StatefulWidget {
   final String title;
   final String phoneNumber;
   final Function(String) onPhoneChanged;
-
   const PhoneInfoItem({
     super.key,
     required this.title,
     required this.phoneNumber,
     required this.onPhoneChanged,
   });
-
   @override
   _PhoneInfoItemState createState() => _PhoneInfoItemState();
 }
@@ -256,7 +367,6 @@ class _PhoneInfoItemState extends State<PhoneInfoItem> {
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
-
   @override
   void initState() {
     super.initState();
