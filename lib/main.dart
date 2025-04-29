@@ -1,4 +1,5 @@
 import 'package:domrep_flutter/components/history_list.dart';
+import 'package:domrep_flutter/components/screens/ProfileScreen.dart';
 import 'package:domrep_flutter/components/screens/sign_in_screen.dart';
 import 'package:domrep_flutter/components/screens/sign_up_screen.dart';
 
@@ -42,6 +43,10 @@ class MyApp extends StatelessWidget {
         '/signin': (context) => const SignInScreen(),
         '/signup': (context) => const SignUpScreen(),
         '/home': (context) => const HomeScreen(),
+        '/profile': (context) {
+          final phoneNumber = ModalRoute.of(context)!.settings.arguments as String;
+          return ProfileScreen(phoneNumber: phoneNumber);
+        },
       },
       onUnknownRoute: (settings) => MaterialPageRoute(
         builder: (context) => const SignInScreen(),

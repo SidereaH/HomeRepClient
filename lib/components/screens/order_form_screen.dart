@@ -3,6 +3,7 @@ import 'package:domrep_flutter/components/tip_arrow.dart';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../../styles/styles.dart';
@@ -27,6 +28,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   String apartmentValue = '';
   String descriptionValue = '';
   String priceValue = '';
+
   String phoneValue = '+7 971 231-12-32';
   String selectedCategory = '';
 
@@ -51,8 +53,6 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
           "buildingNumber": addressValue.split(' ')[1], // а номер дома - второе
           "apartmentNumber": apartmentValue,
           "cityName": selectedCity,
-          "longitude": 0.0, // нужно добавить реальные координаты
-          "latitude": 0.0,  // нужно добавить реальные координаты
         },
         "paymentType": {"name": "MIR"}, // или другой тип оплаты
         "accepted": false
@@ -88,9 +88,14 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
       }
     }
   }
+  Future<void> fillPhone() async{
+    final SharedPreferences storage = await SharedPreferences.getInstance();
+    this.phoneValue = storage.getString("userPhone")!;
+  }
 
   @override
   Widget build(BuildContext context) {
+    fillPhone();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

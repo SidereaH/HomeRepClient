@@ -1,9 +1,22 @@
 import 'package:domrep_flutter/components/geoloc/geoTile.dart';
+import 'package:domrep_flutter/components/screens/ProfileScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuItems extends StatelessWidget {
   const MenuItems({super.key});
+
+  Future<void> _navigateToProfile(BuildContext context) async {
+    final SharedPreferences storage = await SharedPreferences.getInstance();
+    final phoneNumber = storage.getString('phoneNumber') ?? '79882578790';
+    if (!context.mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProfileScreen(phoneNumber: phoneNumber),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +30,10 @@ class MenuItems extends StatelessWidget {
             backgroundColor: Colors.grey.shade300,
             child: Icon(Icons.person, size: 50, color: Colors.white),
           ),
+          onDetailsPressed: () {
+            // Здесь должен быть реальный номер из вашего хранилища
+            _navigateToProfile(context);
+          },
         ),
         LocationScreen(),
         ListTile(
@@ -73,7 +90,8 @@ class MenuItems extends StatelessWidget {
           title: Text('Выйти'),
           leading: Icon(Icons.logout),
           onTap: () async {
-            final SharedPreferences storage = await SharedPreferences.getInstance();
+            final SharedPreferences storage =
+                await SharedPreferences.getInstance();
             // Сохраняем токены (например, в SharedPreferences)
             storage.clear();
             Navigator.pushReplacementNamed(context, '/signin');

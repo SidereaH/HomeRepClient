@@ -68,12 +68,13 @@ class _SignInScreenState extends State<SignInScreen> {
         final authResponse = jsonDecode(response.body);
         final accessToken = authResponse['accessToken'];
         final refreshToken = authResponse['refreshToken'];
+        final phone = authResponse['userPhone'];
 
         final SharedPreferences storage = await SharedPreferences.getInstance();
         // Сохраняем токены (например, в SharedPreferences)
         await storage.setString('accessToken', accessToken);
         await storage.setString('refreshToken', refreshToken);
-
+        await storage.setString("userPhone", phone);
         // Переходим на главный экран
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/home');
