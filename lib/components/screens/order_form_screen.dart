@@ -1,5 +1,7 @@
+import 'package:domrep_flutter/components/geoloc/geoTile.dart';
 import 'package:domrep_flutter/components/screens/home_screen.dart';
 import 'package:domrep_flutter/components/tip_arrow.dart';
+import 'package:domrep_flutter/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:http/http.dart' as http;
@@ -40,11 +42,32 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
     selectedCategory = widget.orderCategory;
   }
 
+  String geocode_api = AppConfig.YANDEX_GEOCODER;
+  Future<String> getGeoByAddress(String city, String street, String building) async {
+    final url =
+        'https://geocode-maps.yandex.ru/1.x/?apikey=$geocode_api&geocode=$city $street $building&format=json';
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final results = data['response']['GeoObjectCollection']['featureMember'];
+        if (results is List && results.isNotEmpty) {
+          final pos = results[0]['GeoObject']['Point']['pos'] ?? 'Координаты не найдены';
+          return pos;
+        }
+      }
+    } catch (e) {
+      return 'Ошибка при получении координат: $e';
+    }
+    return "Ошибка при получении координат";
+  }
+
   Future<void> _submitOrder() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
       // Подготовка данных для отправки
+      String lonLat = await getGeoByAddress(selectedCity,addressValue.split(',')[0],addressValue.split(' ')[1]);
       final orderData = {
         "description": descriptionValue,
         "category": {"name": selectedCategory},
@@ -53,14 +76,17 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
           "buildingNumber": addressValue.split(' ')[1], // а номер дома - второе
           "apartmentNumber": apartmentValue,
           "cityName": selectedCity,
+          "longitude" : lonLat.split(' ')[1],
+          "latitude": lonLat.split(' ')[0]
+
         },
         "paymentType": {"name": "MIR"}, // или другой тип оплаты
-        "accepted": false
       };
+      print(orderData);
 
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8084/orders'), // замените на ваш URL
+          Uri.parse('${AppConfig.MAIN_API_URI}/api/orders'), // замените на ваш URL
           headers: {'Content-Type': 'application/json'},
           body: json.encode(orderData),
         );
@@ -247,7 +273,6 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
             ),
           ),
 
-          // Закрепленная кнопка внизу
           Positioned(
             left: 20,
             right: 20,

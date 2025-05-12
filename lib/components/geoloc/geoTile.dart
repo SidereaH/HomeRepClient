@@ -81,6 +81,24 @@ class _LocationScreenState extends State<LocationScreen> {
     }
     return "Ошибка при получении местоположения";
   }
+  Future<String> getGeoByAddress(String city, String street, String building) async {
+    final url =
+        'https://geocode-maps.yandex.ru/1.x/?apikey=$geocode_api=$city $street $building&format=json';
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final results = data['response']['GeoObjectCollection']['featureMember'];
+        if (results is List && results.isNotEmpty) {
+          final address = results[0]['GeoObject']['Point'] ?? 'Неизвестный адрес';
+          return address;
+        }
+      }
+    } catch (e) {
+      return 'Ошибка при получении координат: $e';
+    }
+    return "Ошибка при получении координат";
+  }
 
   @override
   Widget build(BuildContext context) {
