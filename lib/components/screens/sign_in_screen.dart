@@ -1,3 +1,4 @@
+import 'package:domrep_flutter/components/screens/ProfileScreen.dart';
 import 'package:domrep_flutter/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,6 +44,27 @@ class _SignInScreenState extends State<SignInScreen> {
     return phone.length == 10 && _passwordController.text.length >= 6;
   }
 
+  Future<ClientResponse> fetchClientData(String phoneNumber) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${AppConfig.MAIN_API_URI}/api/users/phone?phoneNumber=${phoneNumber}'),
+        headers: {'Accept': 'application/json'},
+      );
+      print(response.body);
+      if (response.statusCode == 200) {
+        return ClientResponse.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception('Не удалось загрузить данные. Код: ${response.statusCode}');
+      }
+    } catch (e) {
+      setState(() => _errorMessage = e.toString());
+      throw e;
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
   Future<void> _submit() async {
     if (!_isFormValid || _isLoading) return;
 
@@ -71,10 +93,11 @@ class _SignInScreenState extends State<SignInScreen> {
         final phone = authResponse['userPhone'];
 
         final SharedPreferences storage = await SharedPreferences.getInstance();
-        // Сохраняем токены (например, в SharedPreferences)
         await storage.setString('accessToken', accessToken);
         await storage.setString('refreshToken', refreshToken);
         await storage.setString("userPhone", phone);
+        ClientResponse resp = await fetchClientData(phone);
+        await storage.setString('id', resp.id);
         // Переходим на главный экран
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/home');

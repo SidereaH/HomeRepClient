@@ -29,7 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Uri.parse('${AppConfig.MAIN_API_URI}/api/users/phone?phoneNumber=${widget.phoneNumber}'),
         headers: {'Accept': 'application/json'},
       );
-
+      print(response.body);
       if (response.statusCode == 200) {
         return ClientResponse.fromJson(jsonDecode(response.body));
       } else {

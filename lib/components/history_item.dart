@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
-
-import '../models/history_item.dart';
 import '../styles/styles.dart';
 
 class HistoryItem extends StatelessWidget {
-  const HistoryItem({super.key});
+  final dynamic order;
+
+  const HistoryItem({super.key, required this.order});
+
+  String _formatDate(String dateString) {
+    try {
+      final dateTime = DateTime.parse(dateString);
+      return '${dateTime.day}.${dateTime.month} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return dateString;
+    }
+  }
+
+  String _getAddress() {
+    final address = order['address'];
+    if (address == null) return 'Адрес не указан';
+    return '${address['streetName']} ${address['buildingNumber']}';
+  }
 
   @override
   Widget build(BuildContext context) {
-    HistoryItemModel item = HistoryItemModel(
-      "10.02 14:00",
-      "Сантехника",
-      "Кран потек",
-      "Чупапи Чупа Чупачиви",
-      "Смычки 72",
-      1800,
-    );
-    // TODO: implement build
     return Container(
       width: 350,
       padding: EdgeInsets.all(8),
@@ -34,7 +40,7 @@ class HistoryItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              item.date,
+              _formatDate(order['createdAt'] ?? ''),
               style: TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
@@ -51,7 +57,7 @@ class HistoryItem extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.asset(
-                    'assets/images/what_is_group.png', // Замените на ссылку на изображение
+                    'assets/images/what_is_group.png',
                     width: 70,
                     height: 70,
                     fit: BoxFit.cover,
@@ -64,36 +70,45 @@ class HistoryItem extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Text("Кат-я: ",
-                            ),
-                          Text(item.category,style: TextStyle(fontWeight: FontWeight.w500) )
-                      ]),
+                          Text("Категория: "),
+                          Text(
+                            order['category']?['name'] ?? 'Не указана',
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          )
+                        ],
+                      ),
                       Row(
-                          children: [
-                            Text("Крат. описание: ",
-                            ),
-                            Text(item.shortDesc,style: TextStyle(fontWeight: FontWeight.w500) )
-                          ]),
+                        children: [
+                          Text("Описание: "),
+                          Text(
+                            order['description'] ?? 'Нет описания',
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          )
+                        ],
+                      ),
                       Row(
-                          children: [
-                            Text("Мастер: ",
+                        children: [
+                          Text("Статус: "),
+                          Text(
+                            order['accepted'] == true ? 'Принята' : 'Не принята',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: order['accepted'] == true
+                                  ? Colors.green
+                                  : Colors.red,
                             ),
-                            Text(item.masterName,style: TextStyle(fontWeight: FontWeight.w500) )
-                          ]),
+                          )
+                        ],
+                      ),
                       Row(
-                          children: [
-                            Text("Адрес: ",
-                            ),
-                            Text(item.address, style: TextStyle(fontWeight: FontWeight.w500) )
-                          ]),
-                      Row(
-                          children: [
-                            Text("Итого:  ",
-                            ),
-                            Text(item.getItemCosts(), style: TextStyle(fontWeight: FontWeight.w500) )
-                          ]),
-
-
+                        children: [
+                          Text("Адрес: "),
+                          Text(
+                            _getAddress(),
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          )
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -111,8 +126,8 @@ class HistoryItem extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: accentColor, // Оранжевый цвет фона
-                  borderRadius: BorderRadius.circular(5), // Закругленные края
+                  color: accentColor,
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -120,7 +135,6 @@ class HistoryItem extends StatelessWidget {
                     Text(
                       "Подробнее",
                       style: buttonText,
-
                     ),
                     SizedBox(width: 10),
                     Image.asset(
@@ -132,7 +146,6 @@ class HistoryItem extends StatelessWidget {
               ),
             ),
           )
-
         ],
       ),
     );

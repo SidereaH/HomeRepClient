@@ -66,14 +66,16 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      // Подготовка данных для отправки
+      final SharedPreferences storage = await SharedPreferences.getInstance();
+      String? clientID = await storage.getString("id");
       String lonLat = await getGeoByAddress(selectedCity,addressValue.split(',')[0],addressValue.split(' ')[1]);
       final orderData = {
         "description": descriptionValue,
         "category": {"name": selectedCategory},
+        "customerId": clientID,
         "address": {
           "streetName": addressValue.split(',')[0], // предполагаем, что улица - первое слово
-          "buildingNumber": addressValue.split(' ')[1], // а номер дома - второе
+          "buildingNumber": addressValue.split(',')[1], // а номер дома - второе
           "apartmentNumber": apartmentValue,
           "cityName": selectedCity,
           "longitude" : lonLat.split(' ')[1],
@@ -90,7 +92,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
           headers: {'Content-Type': 'application/json'},
           body: json.encode(orderData),
         );
-
+        print(response.body);
         if (response.statusCode == 200) {
           // Успешная отправка
           ScaffoldMessenger.of(context).showSnackBar(
