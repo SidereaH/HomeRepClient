@@ -1,3 +1,4 @@
+import 'package:domrep_flutter/components/screens/order_details_screen.dart';
 import 'package:flutter/material.dart';
 import '../styles/styles.dart';
 
@@ -77,13 +78,15 @@ class HistoryItem extends StatelessWidget {
                           )
                         ],
                       ),
-                      Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text("Описание: "),
                           Text(
                             order['description'] ?? 'Нет описания',
                             style: TextStyle(fontWeight: FontWeight.w500),
-                          )
+                            softWrap: true,
+                          ),
                         ],
                       ),
                       Row(
@@ -120,8 +123,14 @@ class HistoryItem extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: InkWell(
               onTap: () {
-                // Действие при нажатии
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrderDetailsScreen(order: order),
+                  ),
+                );
               },
+
               borderRadius: BorderRadius.circular(5),
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),

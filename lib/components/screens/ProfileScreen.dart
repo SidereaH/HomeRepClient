@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:domrep_flutter/config/app_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String phoneNumber;
@@ -22,16 +23,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _clientFuture = _fetchClientData();
   }
-
   Future<ClientResponse> _fetchClientData() async {
     try {
       final response = await http.get(
         Uri.parse('${AppConfig.MAIN_API_URI}/api/users/phone?phoneNumber=${widget.phoneNumber}'),
-        headers: {'Accept': 'application/json'},
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
       );
-      print(response.body);
+
+      // Properly decode the UTF-8 response body
+      final decodedBody = utf8.decode(response.bodyBytes);
+      print(decodedBody);
+
       if (response.statusCode == 200) {
-        return ClientResponse.fromJson(jsonDecode(response.body));
+        return ClientResponse.fromJson(jsonDecode(decodedBody));
       } else {
         throw Exception('Не удалось загрузить данные. Код: ${response.statusCode}');
       }
@@ -44,7 +48,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -235,21 +238,100 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _showEditDialog(BuildContext context) {
+  void _showEditDialog(BuildContext context) async {
+    final client = await _clientFuture;
+
+    final TextEditingController firstNameController =
+    TextEditingController(text: client.firstName);
+    final TextEditingController middleNameController =
+    TextEditingController(text: client.middleName ?? '');
+    final TextEditingController lastNameController =
+    TextEditingController(text: client.lastName ?? '');
+    final TextEditingController emailController =
+    TextEditingController(text: client.email);
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Редактирование профиля'),
-        content: const Text('Здесь будет форма редактирования'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Закрыть'),
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Редактировать профиль'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: lastNameController,
+                  decoration: const InputDecoration(labelText: 'Фамилия'),
+                ),
+                TextField(
+                  controller: firstNameController,
+                  decoration: const InputDecoration(labelText: 'Имя'),
+                ),
+                TextField(
+                  controller: middleNameController,
+                  decoration: const InputDecoration(labelText: 'Отчество'),
+                ),
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Отмена'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final updatedClient = {
+                  'firstName': firstNameController.text,
+                  'middleName': middleNameController.text,
+                  'lastName': lastNameController.text,
+                  'email': emailController.text,
+                };
+
+                try {
+                  await _updateClientData(client.id, updatedClient);
+                  setState(() {
+                    _clientFuture = _fetchClientData(); // Обновляем данные после редактирования
+                  });
+                  Navigator.pop(context);
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Ошибка обновления: $e')),
+                  );
+                }
+              },
+              child: const Text('Сохранить'),
+            ),
+          ],
+        );
+      },
     );
   }
+  Future<void> _updateClientData(String id, Map<String, dynamic> updatedData) async {
+    final url = Uri.parse('${AppConfig.MAIN_API_URI}/api/users/$id');
+    final SharedPreferences storage = await SharedPreferences.getInstance();
+    final token = await storage.getString('accessToken');
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': 'Bearer $token', // замените на токен
+      },
+      body: jsonEncode(updatedData),
+    );
+
+    if (response.statusCode != 200) {
+      final error = utf8.decode(response.bodyBytes);
+      throw Exception('Ошибка обновления: $error');
+    }
+  }
+
+
 }
 
 class ClientResponse {

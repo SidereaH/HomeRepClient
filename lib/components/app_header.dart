@@ -35,29 +35,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
               tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
             );
           },),
-        // ),
-        // SizedBox(
-        //   width: 15,
-        //   height: 15,
-        //   child: InkWell(
-        //     onTap: () {
-        //       Scaffold.of(context).openDrawer();
-        //     },
-        //     splashColor: Colors.transparent,
-        //     highlightColor: Colors.transparent,
-        //     child: Container(
-        //       decoration: BoxDecoration(
-        //         shape: BoxShape.circle,
-        //       ),
-        //       child: Image.asset(
-        //         "assets/images/menu_button.png",
-        //         width: 15,
-        //         height: 15,
-        //         fit: BoxFit.cover,
-        //       ),
-        //     ),
-        //   ),
-        // ),
         title: Row(
           children: [
 

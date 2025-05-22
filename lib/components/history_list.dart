@@ -39,7 +39,7 @@ class _HistoryListState extends State<HistoryList> {
         Uri.parse('${AppConfig.MAIN_API_URI}/api/orders/user/$clientId'),
         headers: {'Content-Type': 'application/json; charset=utf-8'},
       );
-
+      print(response.body);
       if (response.statusCode == 200) {
         // Декодируем тело ответа с учетом кодировки UTF-8
         final String responseBody = utf8.decode(response.bodyBytes);

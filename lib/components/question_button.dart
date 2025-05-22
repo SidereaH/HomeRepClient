@@ -16,7 +16,7 @@ class QuestionButton extends StatelessWidget {
     return InkWell(
       onTap: () {
         Fluttertoast.showToast(
-          msg: "опять стиралка?",
+          msg: "поплач",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
         );

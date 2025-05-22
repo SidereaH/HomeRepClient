@@ -1,4 +1,5 @@
 import 'package:domrep_flutter/components/geoloc/geoTile.dart';
+import 'package:domrep_flutter/components/geoloc/location_service.dart';
 import 'package:domrep_flutter/components/screens/home_screen.dart';
 import 'package:domrep_flutter/components/tip_arrow.dart';
 import 'package:domrep_flutter/config/app_config.dart';
@@ -26,7 +27,13 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
     'Батайск',
     'Аксай',
   ];
-  String addressValue = 'ул Смычки 72';
+  Future<void> _loadAddress() async {
+    final address = await LocationService.getCurrentAddress();
+    setState(() {
+      addressValue = address;
+    });
+  }
+  String addressValue = 'Ваш адрес...';
   String apartmentValue = '';
   String descriptionValue = '';
   String priceValue = '';
@@ -124,6 +131,7 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   @override
   Widget build(BuildContext context) {
     fillPhone();
+    _loadAddress();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
