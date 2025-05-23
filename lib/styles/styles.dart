@@ -11,7 +11,6 @@ const Color accentColor = Color(0xffFF8200);
 const Color tipColor  = Color(0xff9F9F9F);
 const TextStyle questionAccentStyle =
     TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: whiteColor);
-// Текстовые стили
 const TextStyle titleStyle = TextStyle(
   fontSize: 26,
   fontWeight: FontWeight.bold,
@@ -40,7 +39,6 @@ const TextStyle categoryNameTextStyle = TextStyle(
   fontWeight: FontWeight.w500,
   color: textColor,
 );
-// Декорации
 final BoxDecoration buttonDecoration = BoxDecoration(
   color: primaryColor,
   borderRadius: BorderRadius.circular(10),

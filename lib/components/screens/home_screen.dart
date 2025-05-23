@@ -43,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppHeader(bonuses: 1000, address: _address),
       drawer: Drawer(child: MenuItems()),

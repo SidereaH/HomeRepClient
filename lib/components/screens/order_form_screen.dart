@@ -27,18 +27,13 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
     'Батайск',
     'Аксай',
   ];
-  Future<void> _loadAddress() async {
-    final address = await LocationService.getCurrentAddress();
-    setState(() {
-      addressValue = address;
-    });
-  }
+
   String addressValue = 'Ваш адрес...';
   String apartmentValue = '';
   String descriptionValue = '';
   String priceValue = '';
 
-  String phoneValue = '+7 971 231-12-32';
+  String phoneValue = '';
   String selectedCategory = '';
 
   final _formKey = GlobalKey<FormState>();
@@ -47,6 +42,28 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
   void initState() {
     super.initState();
     selectedCategory = widget.orderCategory;
+
+    Future.delayed(Duration.zero, () {
+      _loadAddress();
+      _fillPhone();
+    });
+  }
+
+  Future<void> _loadAddress() async {
+    try {
+      final address = await LocationService.getCurrentAddress();
+      if (mounted) {
+        setState(() {
+          addressValue = address;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          addressValue = 'Не удалось получить адрес';
+        });
+      }
+    }
   }
 
   String geocode_api = AppConfig.YANDEX_GEOCODER;
@@ -76,6 +93,17 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
       final SharedPreferences storage = await SharedPreferences.getInstance();
       String? clientID = await storage.getString("id");
       String lonLat = await getGeoByAddress(selectedCity,addressValue.split(',')[0],addressValue.split(' ')[1]);
+      String lon;
+      String lat;
+      if(lonLat.contains("Ошибка")){
+        lon = "0";
+        lat = "0";
+      }
+      else{
+        lon = lonLat.split(' ')[1];
+        lat = lonLat.split(' ')[0];
+      }
+
       final orderData = {
         "description": descriptionValue,
         "category": {"name": selectedCategory},
@@ -85,8 +113,8 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
           "buildingNumber": addressValue.split(',')[1], // а номер дома - второе
           "apartmentNumber": apartmentValue,
           "cityName": selectedCity,
-          "longitude" : lonLat.split(' ')[1],
-          "latitude": lonLat.split(' ')[0]
+          "longitude" : lon,
+          "latitude": lat
 
         },
         "paymentType": {"name": "MIR"}, // или другой тип оплаты
@@ -123,15 +151,29 @@ class _OrderFormScreenState extends State<OrderFormScreen> {
       }
     }
   }
-  Future<void> fillPhone() async{
-    final SharedPreferences storage = await SharedPreferences.getInstance();
-    this.phoneValue = storage.getString("userPhone")!;
+  Future<void> _fillPhone() async {
+    try {
+      final SharedPreferences storage = await SharedPreferences.getInstance();
+      final phone = storage.getString("userPhone") ?? "";
+      if (mounted) {
+        setState(() {
+          phoneValue = phone.substring(1);
+        });
+        print("Загруженный телефон: $phoneValue");
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          phoneValue = "";
+        });
+      }
+      print("Ошибка при загрузке телефона: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    fillPhone();
-    _loadAddress();
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -407,13 +449,27 @@ class _PhoneInfoItemState extends State<PhoneInfoItem> {
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
+
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: maskFormatter.maskText(widget.phoneNumber),
+      text: widget.phoneNumber.isNotEmpty
+          ? maskFormatter.maskText(widget.phoneNumber)
+          : '',
     );
   }
+
+  @override
+  void didUpdateWidget(PhoneInfoItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.phoneNumber != oldWidget.phoneNumber) {
+      _controller.text = widget.phoneNumber.isNotEmpty
+          ? maskFormatter.maskText(widget.phoneNumber)
+          : '';
+    }
+  }
+
 
   @override
   void dispose() {
