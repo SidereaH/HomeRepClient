@@ -1,6 +1,6 @@
 # domrep_flutter
-
-A new Flutter project.
+[![wakatime](https://wakatime.com/badge/user/ce63b378-df01-4480-af66-a4f584b910ad/project/f1ebaffb-97f7-4436-802c-0d4d451100e3.svg)](https://wakatime.com/badge/user/ce63b378-df01-4480-af66-a4f584b910ad/project/f1ebaffb-97f7-4436-802c-0d4d451100e3)
+A Flutter app for HomeRep.
 
 ## Getting Started
 
