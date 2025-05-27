@@ -103,13 +103,24 @@ class HistoryItem extends StatelessWidget {
                           )
                         ],
                       ),
-                      Row(
+                      // Row(
+                      //   children: [
+                      //     Text("Адрес: "),
+                      //     Text(
+                      //       _getAddress(),
+                      //       style: TextStyle(fontWeight: FontWeight.w500),
+                      //     )
+                      //   ],
+                      // ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text("Адрес: "),
                           Text(
                             _getAddress(),
                             style: TextStyle(fontWeight: FontWeight.w500),
-                          )
+                            softWrap: true,
+                          ),
                         ],
                       ),
                     ],
